@@ -20,15 +20,16 @@ session_start();
         <button type="submit" value="7" name="afmelden" id="afmelden">afmelden</button>
     </form>
 
-<!--dit uitvoeren als de laptopnummer die je kan ingeven hieronder ingegeven was maar niet uitgeleend was.-->
-    <?php
+
+    <form action="terugbrengenVoorAnder.php" method="post">
+        <!--dit uitvoeren als de laptopnummer die je kan ingeven hieronder ingegeven was maar niet uitgeleend was.-->
+        <?php
         if (isset($_SESSION["foutmelding"])){
             ?>
-            <div class="alert alert-danger foutmeding mt-5" role="alert" id="uitleenError"><?=$_SESSION["foutmelding"]?></div>
+            <div class="alert alert-danger mt-5" role="alert" id="uitleenError"><?=$_SESSION["foutmelding"]?></div>
             <?php
         }
-    ?>
-    <form action="terugbrengenVoorAnder.php" method="post">
+        ?>
         <p>Laptop gevonden of terugbrengen voor iemand anders?</p>
         <div><label for="laptopNr">laptopnummer</label>
             <input type="number" name="laptopNr" id="laptopNr" required></div>
