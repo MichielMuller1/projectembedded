@@ -35,7 +35,7 @@ if ($result = $conn->query($sql)) {
 		'voornaam' => $row_voornaam, 
 		'achternaam' => $row_achternaam
 			     );
-		header('Content-type: text/javascript');
+		header('Content-type: application/json');
 		echo json_encode($data);
     }
     $result->free();
