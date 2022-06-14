@@ -8,8 +8,8 @@ $api_key_value = "tPmAT5Ab3j7F7";
 
 $api_key= $num = $rnum = $vn = $an = $ad = "";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $api_key = test_input($_POST["api_key"]);
+//if ($_SERVER["REQUEST_METHOD"] == "POST") {
+   // $api_key = test_input($_POST["api_key"]);
     // if($api_key == $api_key_value) {
         $num = test_input($_POST["num"]);
         $rnum = test_input($_POST["rnum"]);
@@ -40,10 +40,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     //     echo "Wrong API Key provided.";
     // }
 
-}
-else {
-    echo "No data posted with HTTP POST.";
-}
+//}
+//else {
+//    echo "No data posted with HTTP POST.";
+//}
 
 function test_input($data) {
     $data = trim($data);
