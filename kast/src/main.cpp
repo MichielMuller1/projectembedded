@@ -59,7 +59,6 @@ const int stroomspoelBeneden = A3;
 #define IOCON0  0x0A  // I/O EXPANDER CONTROL REGISTER 0 
 #define IOCON1  0x0B  // I/O EXPANDER CONTROL REGISTER 1 
 
-
 //magneetcontacten
 const int magneetBoven = 33;
 const int magneetMidden = 15;
@@ -72,8 +71,7 @@ const int slotOnder = 21;
 
 //relais
 const int relaisBoven = 32;
-const int relaisOnder = 7;
-
+const int relaisOnder = 0; // de code om deze relais aan te zetten is writeBlockData(GP0,0); om hem uit te zetten writeBlockData(GP0,1);
 
 //////////////////////////////////////
 //////////////////////////////////////
@@ -163,11 +161,28 @@ void effectQuinten(){
   }
 }
 
+void ledstrip(String kleurWaar){
+  if (kleurWaar=="onderRood")
+  {
+    writeBlockData(GP1, 1);
+  }else if (kleurWaar=="onderGroen")
+  {
+    writeBlockData(GP1,2);
+  }else if (kleurWaar=="bovenRood")
+  {
+    writeBlockData(GP1,16);
+  }else if (kleurWaar=="bovenGroen")
+  {
+    writeBlockData(GP1,32);
+  }else{
+    writeBlockData(GP1,0);
+  }
+  
+}
 
 //////////////////////////////////
 //kaartlezer
 //////////////////////////////////
-
 
 
 
@@ -192,8 +207,8 @@ void setup()
   writeBlockData(IODIR0, 0x00);
   writeBlockData(IODIR1, 0x00);
   //alle pinnen op 0 zetten
-  writeBlockData(GP0, B00000000);
-  writeBlockData(GP1, B00000000);
+  writeBlockData(GP0, B00000001);//de relais
+  writeBlockData(GP1, B00000000);//de leds
 
 
 
