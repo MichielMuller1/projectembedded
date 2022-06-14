@@ -20,6 +20,7 @@ $sql = "SELECT * FROM kaarten";
 
 if ($result = $conn->query($sql)) {
     $arr = [];
+    $inc = 0;
     while ($row = $result->fetch_assoc()) {
         $row_uid = $row["UID"];
         $row_rnummer = $row["rnummer"];
@@ -34,7 +35,8 @@ if ($result = $conn->query($sql)) {
 		'voornaam' => $row_voornaam, 
 		'achternaam' => $row_achternaam
 			     );
-    $arr += $data;
+    $arr[$inc] = $data;
+    $inc++;
     }
 	header('Content-type: application/json');
 	echo json_encode($arr);
