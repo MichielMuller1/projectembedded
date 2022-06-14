@@ -8,8 +8,8 @@ $api_key_value = "tPmAT5Ab3j7F7";
 
 $api_key= $num = $rnum = $vn = $an = $ad = "";
 
-//if ($_SERVER["REQUEST_METHOD"] == "POST") {
-   // $api_key = test_input($_POST["api_key"]);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $api_key = test_input($_POST["api_key"]);
     // if($api_key == $api_key_value) {
         $num = test_input($_POST["num"]);
         $rnum = test_input($_POST["rnum"]);
@@ -24,8 +24,10 @@ $api_key= $num = $rnum = $vn = $an = $ad = "";
             die("Connection failed: " . $conn->connect_error);
         } 
         $t=time();
+        $date = date("Y-m-d H:i:s",$t);
         
-        $sql = "INSERT INTO kaartlezer VALUES tijd = '".date("Y-m-d H:i:s",$t)."', kaartnummer = '" .$num. "', rnummer = '" .$rnum. "', voornaam = '" .$vn. "', achternaam = '" .$an. "', admin = '" .$ad. "' ";
+        $sql = "INSERT INTO kaartlezer (tijd, kaartnummer, rnummer, voornaam, achternaam, admin)
+        VALUES ($date, $num, $rnum, $vn, $an, $ad)";
         
         if ($conn->query($sql) === TRUE) {
             echo "New record created successfully";
@@ -40,10 +42,10 @@ $api_key= $num = $rnum = $vn = $an = $ad = "";
     //     echo "Wrong API Key provided.";
     // }
 
-//}
-//else {
-//    echo "No data posted with HTTP POST.";
-//}
+}
+else {
+    echo "No data posted with HTTP POST.";
+}
 
 function test_input($data) {
     $data = trim($data);
