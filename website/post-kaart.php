@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $t=time();
         $date = "'" . date("Y-m-d H:i:s",$t) . "'";
         
-        $sql = "INSERT INTO `kaartlezer` (`ID`, `tijd`, `kaartnummer`, `rnummer`, `voornaam`, `achternaam`, `admin`) VALUES (NULL, $date, $num, $rnum, $vn, $an, $ad)";
+        $sql = "INSERT INTO `kaartlezer` (`ID`, `tijd`, `kaartnummer`, `rnummer`, `voornaam`, `achternaam`, `admin`) VALUES (1, $date, $num, $rnum, $vn, $an, $ad)";
         
         if ($conn->query($sql) === TRUE) {
             echo "New record created successfully";
