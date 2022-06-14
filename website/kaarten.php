@@ -20,7 +20,7 @@ $sql = "SELECT * FROM kaarten";
 
 if ($result = $conn->query($sql)) {
     while ($row = $result->fetch_assoc()) {
-        $row_uid = $row["uid"];
+        $row_uid = $row["UID"];
         $row_rnummer = $row["rnummer"];
 		$row_voornaam = $row["voornaam"];
         $row_achternaam = $row["achternaam"];
