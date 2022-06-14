@@ -6,7 +6,7 @@ $password = "Patje123";
 
 $api_key_value = "tPmAT5Ab3j7F7";
 
-$api_key= $num = $rnum = $vn = $an = $ad = "0";
+$api_key= $num = $rnum = $vn = $an = $ad = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $api_key = test_input($_POST["api_key"]);
@@ -24,10 +24,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             die("Connection failed: " . $conn->connect_error);
         } 
         $t=time();
-        $date = '"'. date("Y-m-d H:i:s",$t) .'"';
+        $date = "'" + date("Y-m-d H:i:s",$t) + "'";
         
-        $sql = "INSERT INTO kaartlezer (tijd, kaartnummer, rnummer, voornaam, achternaam, admin)
-        VALUES ($date, $num, $rnum, $vn, $an, $ad)";
+        $sql = "INSERT INTO `kaartlezer` (`ID`, `tijd`, `kaartnummer`, `rnummer`, `voornaam`, `achternaam`, `admin`) VALUES (NULL, $date, $num, $rnum, $vn, $an, $ad)";
         
         if ($conn->query($sql) === TRUE) {
             echo "New record created successfully";
