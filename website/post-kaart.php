@@ -1,15 +1,14 @@
 <?php
 $servername = "localhost";
-$dbname = "pompoen";
-$username = "pi";
-$password = "raspberry";
+$dbname = "laptops";
+$username = "ubuntu";
+$password = "Patje123";
 
 $api_key_value = "tPmAT5Ab3j7F7";
 
 $api_key= $num = $rnum = $vn = $an = $ad = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    echo $_POST["api_key"];
     $api_key = test_input($_POST["api_key"]);
     if($api_key == $api_key_value) {
         $num = test_input($_POST["num"]);
@@ -26,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } 
         $t=time();
         
-        $sql = "UPDATE pompoen1 SET tijd = '".date("Y-m-d H:i:s",$t)."', kaartnummer = '" .$num. "', rnummer = '" .$rnum. "', voornaam = '" .$vn. "', achternaam = '" .$an. "', admin = '" .$ad. "' ";
+        $sql = "INSERT INTO kaartlezer VALUES tijd = '".date("Y-m-d H:i:s",$t)."', kaartnummer = '" .$num. "', rnummer = '" .$rnum. "', voornaam = '" .$vn. "', achternaam = '" .$an. "', admin = '" .$ad. "' ";
         
         if ($conn->query($sql) === TRUE) {
             echo "New record created successfully";
