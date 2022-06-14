@@ -20,14 +20,14 @@ $sql = "SELECT * FROM openKastjes";
 
 if ($result = $conn->query($sql)) {
     while ($row = $result->fetch_assoc()) {
-	$row_kastNrOpen = $row["kastNrOpen"];
+	$row_kastNr = $row["kastNr"];
 	
 		
 		
 		
 		
 		$data = array(
-		'kastNrOpen' => $row_kastNrOpen
+		'kastNr' => $row_kastNr
 			     );
 		header('Content-type: text/javascript');
 		echo json_encode($data);

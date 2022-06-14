@@ -26,7 +26,7 @@ if ($result = $conn->query($sql)) {
     $row_magneetStatus = $row["magneetStatus"]; 
 	$row_uitgeleend = $row["uitgeleend"]; 
 	$row_uitgeleendDoor = $row["uitgeleendDoor"]; 
-	$row_uitgeleendDatum = $row["uitgeleeendDatum"];
+	$row_uitgeleendDatum = $row["uitgeleendDatum"];
 	
 		
 		
