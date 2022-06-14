@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             die("Connection failed: " . $conn->connect_error);
         } 
         $t=time();
-        $date = '"' + date("Y-m-d H:i:s",$t)+ '"';
+        $date = '"'. date("Y-m-d H:i:s",$t) .'"';
         
         $sql = "INSERT INTO kaartlezer (tijd, kaartnummer, rnummer, voornaam, achternaam, admin)
         VALUES ($date, $num, $rnum, $vn, $an, $ad)";
