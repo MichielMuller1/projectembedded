@@ -1,7 +1,7 @@
 <?php
 $sName = "localhost";
-$uName = "pi";
-$pass = "raspberry";
+$uName = "ubuntu";
+$pass = "Patje123";
 $db_name = "laptops";
 $port = 3306;
 

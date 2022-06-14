@@ -1,19 +1,9 @@
 <?php
 session_start();
 include "db.php";
-include "findFreeLaptop.php";
 include "getName.php";
-//in de database zetten dat het kastje open mag
-date_default_timezone_set("Europe/Brussels");
-$tijd = date('Y-m-d H:i:s');
-$datum = date('Y-m-d');
-//$sql = "INSERT INTO `openKastjes` (`tijd`, `kastNr`) VALUES ('2022-05-12 10:12:12', ".$_SESSION["vrijeLaptop"].")";
-//$conn->exec($sql);
-$sql = "update openKastjes set tijd='$tijd', kastNr = ".$_SESSION["vrijeLaptop"]." where ID=1";
-$conn->exec($sql);
-$sql= "update kastjes set tijd='$tijd', uitgeleend=1, uitgeleendDoor='".$_SESSION['rnummer']."' , uitgeleendDatum='$tijd' where kastNr=".$_SESSION['vrijeLaptop'];
-$conn->exec($sql);
-$sql="INSERT INTO `uitleenLog` (`tijd`, `datum`, `rnummer`) VALUES ('$tijd','$datum','".$_SESSION['rnummer']."')";
+
+$sql = "update openKastjes set tijd='2022-05-12 10:12:12', kastNr = 'A' where ID=1";
 $conn->exec($sql);
 ?>
 
@@ -32,8 +22,7 @@ $conn->exec($sql);
 <div class="center">
     <form action="afmelden.php" method="post">
         <p>Hallo <?= $_SESSION['naam'] ?>,</p>
-        <p>U kan een laptop nemen uit kastje <?= $_SESSION['vrijeLaptop'] ?>.</p>
-        <p>Sluit achteraf het deurtje en meld je af.</p>
+        <p>Alle kastjes zijn nu open.</p>
         <button type="submit" value="3" name="afmelden" id="afmelden">afmelden</button>
     </form>
 </div>

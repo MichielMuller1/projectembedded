@@ -16,7 +16,11 @@ if (!empty($result)){
 
 date_default_timezone_set("Europe/Brussels");
 $tijd = date('Y-m-d H:i:s');
+$datum = date('Y-m-d');
 $sql= "update kastjes set tijd='$tijd', uitgeleend=0, uitgeleendDoor='0' where kastNr=$uitgeleendKastje";
+$conn->exec($sql);
+
+$sql="INSERT INTO `terugbrengLog` (`ID`, `tijd`, `datum`, `rnummer`) VALUES ('$tijd','$datum','".$_SESSION['rnummer']."')";
 $conn->exec($sql);
 
 //in de database zetten dat het kastje open mag
