@@ -34,7 +34,7 @@ session_start();
         <div><label for="laptopNr">laptopnummer</label>
             <input type="number" name="laptopNr" id="laptopNr" required></div>
         <label for="reden">reden</label>
-        <div class="dropdown">
+        <div class="dropdown mb-2">
             <select name="reden" id="reden" required>
                 <option disabled selected value>Kies een optie</option>
                 <option value="gevonden">laptop gevonden</option>

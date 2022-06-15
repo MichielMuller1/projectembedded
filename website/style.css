@@ -42,3 +42,7 @@ li{
 input[type="number"]{
     max-width: 60px;
 }
+
+#reden select{
+    display: none;
+}
