@@ -27,8 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $api_key = test_input($_POST["api_key"]);
     if($api_key == $api_key_value) {
         $oplaadstatus = test_input($_POST["oplaadStatus"]);
-
-
+        $oplaadstatus2 = test_input($_POST["oplaadStatus2"]);
 
         // Create connection
         $conn = new mysqli($servername, $username, $password, $dbname);
@@ -39,8 +38,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $t=time();
         
         $sql = "UPDATE kastjes SET tijd = '".date("Y-m-d H:i:s",$t)."', oplaadStatus = '" .$oplaadstatus. "' WHERE id = '1'";
+        $sql2 = "UPDATE kastjes SET tijd = '".date("Y-m-d H:i:s",$t)."', oplaadStatus2 = '" .$oplaadstatus2. "' WHERE id = '2'";
         
         if ($conn->query($sql) === TRUE) {
+            echo "New record created successfully";
+        } 
+        else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+        if ($conn->query($sql2) === TRUE) {
             echo "New record created successfully";
         } 
         else {
