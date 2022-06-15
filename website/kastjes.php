@@ -19,6 +19,8 @@ if ($conn->connect_error) {
 $sql = "SELECT * FROM kastjes";
 
 if ($result = $conn->query($sql)) {
+	$arr = [];
+    $inc = 0;
     while ($row = $result->fetch_assoc()) {
 	$row_kastNr = $row["kastNr"];
     $row_oplaadStatus = $row["oplaadStatus"];
@@ -39,9 +41,11 @@ if ($result = $conn->query($sql)) {
 		'uitgeleendDoor' => $row_uitgeleendDoor,
 		'uitgeleendDatum' => $row_uitgeleendDatum,
 			     );
-		header('Content-type: text/javascript');
-		echo json_encode($data);
-    }
+		 $arr[$inc] = $data;
+    	$inc++;
+				}
+		header('Content-type: application/json');
+		echo json_encode($arr);
     $result->free();
 }
 

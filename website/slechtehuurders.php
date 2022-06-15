@@ -34,9 +34,10 @@ if ($result = $conn->query($sql)) {
 		'aantalFouten' => $row_aantalFouten,
 		'rnummerTerugbrenger' => $row_rnummerTerugbrenger
 			     );
-		header('Content-type: text/javascript');
-		echo json_encode($data);
+		
     }
+	header('Content-type: application/json');
+	echo json_encode($arr);
     $result->free();
 }
 
