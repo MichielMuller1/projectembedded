@@ -27,6 +27,7 @@ $conn->exec($sql);
 
 $sql="INSERT INTO `kaartlezer` (`ID`, `tijd`, `kaartnummer`, `rnummer`, `voornaam`, `achternaam`, `admin`) VALUES ('1', '$tijd', '$kaartnummer', '$rnummer', '$voornaam', '$achternaam', $admin)";
 $conn->exec($sql);
+echo"test";
 
 
 $stmt = $conn->prepare("select * from kaartlezer");
