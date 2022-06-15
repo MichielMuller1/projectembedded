@@ -1,0 +1,10 @@
+void effectQuintenbackup(){
+    ledstrip("0","0");
+    delay(250);
+    ledstrip("0","1");
+    delay(250);
+    ledstrip("1","1");
+    delay(250);
+    ledstrip("1","0");
+    delay(250);
+}
