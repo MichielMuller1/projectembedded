@@ -10,7 +10,8 @@ echo $result1[0][1];
 $kaartnummer = $result1[0][1];
 
 $stmt = $conn->prepare("select rnummer,voornaam,achternaam,admin from kaarten where UID = $kaartnummer");
-$result2 = $stmt->execute();
+$stmt->execute();
+$result2 = $stmt->fetchAll();
 
 echo $result2;
 $rnummer = $result2[0][0];
