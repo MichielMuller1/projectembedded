@@ -14,10 +14,14 @@ const char* ssid     = "embedded";
 const char* password = "IoTembedded";
 const char* serverName = "http://embed-dev-1.stuvm.be/post-kaart.php";
 const char* serverName1 = "http://embed-dev-1.stuvm.be/kastjes.php";
+const char* serverName2 = "http://embed-dev-1.stuvm.be/postopenkastjes.php";
+const char* serverName3 = "http://embed-dev-1.stuvm.be/openkastjes.php";
 String apiKeyValue = "tPmAT5Ab3j7F7";
 
 String sensorReadings;
 String sensorReadingsArr[100];
+String sensorReadingsArr1[100];
+String sensorReadingsArr2[100];
 
 //////////////////////////////////////
 //////////////////////////////////////
@@ -76,7 +80,7 @@ const int relaisOnder = 0; // de code om deze relais aan te zetten is writeBlock
 
 //solentoid
 String openKastje = "0";
-
+String kastNr = "0";
 String rnummer = "0";
 
 //////////////////////////////////////
@@ -196,19 +200,19 @@ void effectQuinten(){
   }
 }
 
-void ledstrip(String kleurWaar){
-  if (kleurWaar=="onderRood")
+void ledstrip(String boven, String onder){
+  if (boven=="1" and onder=="1")
   {
-    writeBlockData(GP1, 1);
-  }else if (kleurWaar=="onderGroen")
+    writeBlockData(GP1, 17);
+  }else if (boven=="1" and onder=="0")
   {
-    writeBlockData(GP1,2);
-  }else if (kleurWaar=="bovenRood")
+    writeBlockData(GP1,18);
+  }else if (boven=="0" and onder=="0")
   {
-    writeBlockData(GP1,16);
-  }else if (kleurWaar=="bovenGroen")
+    writeBlockData(GP1,34);
+  }else if (boven=="0" and onder=="1")
   {
-    writeBlockData(GP1,32);
+    writeBlockData(GP1,33);
   }else{
     writeBlockData(GP1,0);
   }
@@ -240,30 +244,23 @@ void getKast(){
         Serial.print(keys[i]);
         Serial.print(" = ");
         Serial.println(value);
-        sensorReadingsArr[i] = value;
+        sensorReadingsArr1[i] = value;
       }
 
-      if(sensorReadingsArr[4] == "1"){
-        ledstrip("bovenRood");
-      } else {
-        ledstrip("bovenGroen");
-      }
+      JSONVar keys1 = myObject[1].keys();
 
-      JSONVar keys = myObject[1].keys();
-
-      for (int i = 0; i < keys.length(); i++) {
-        JSONVar value = myObject[1][keys[i]];
+      for (int i = 0; i < keys1.length(); i++) {
+        JSONVar value = myObject[1][keys1[i]];
         String jsonString = JSON.stringify(value);
-        Serial.print(keys[i]);
+        Serial.print(keys1[i]);
         Serial.print(" = ");
         Serial.println(value);
-        sensorReadingsArr[i] = value;
+        sensorReadingsArr2[i] = value;
       }
-      if(sensorReadingsArr[4] == "1"){
-        ledstrip("onderRood");
-      } else {
-        ledstrip("onderGroen");
-      }
+
+      Serial.println(sensorReadingsArr1[4]+" dskl     " +sensorReadingsArr2[4]);
+
+      ledstrip(sensorReadingsArr1[4],sensorReadingsArr2[4]);
     }
   }
 
@@ -333,6 +330,33 @@ void readRFID() { /* function readRFID */
 //////////////////////////////////
 //solenoid
 //////////////////////////////////
+void postopenkastjes() {
+  //openkastje kastnr op 0 zetten
+              if (WiFi.status() == WL_CONNECTED) {
+                  WiFiClient client;
+                  HTTPClient http;
+
+    // Your Domain name with URL path or IP address with path
+        http.begin(client, serverName2);
+        http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+        String httpRequestData = "api_key=" + apiKeyValue + "&num=" + kastNr + "";
+        Serial.print("httpRequestData: ");
+        Serial.println(httpRequestData);
+
+        int httpResponseCode = http.POST(httpRequestData);
+
+        if (httpResponseCode > 0) {
+          Serial.print("HTTP Response code: ");
+          Serial.println(httpResponseCode);
+        }
+        else {
+          Serial.print("Error code: ");
+          Serial.println(httpResponseCode);
+        }
+        // Free resources
+        http.end();
+}
+}
 
 void solenoid(int solenoid, int magneetcontact){
   digitalWrite(solenoid,HIGH);
@@ -346,9 +370,49 @@ void solenoid(int solenoid, int magneetcontact){
         delay(100);
     }
   }
+  postopenkastjes();
   digitalWrite(solenoid,LOW);
-  delay(50000);
   //schrijf naar openkastje kastNr een 0
+}
+
+void getkastnr() {
+  if (WiFi.status() == WL_CONNECTED) {
+
+      sensorReadings = httpGETRequest(serverName3);
+      Serial.println(sensorReadings);
+      JSONVar myObject = JSON.parse(sensorReadings);
+
+      if (JSON.typeof(myObject) == "undefined") {
+        Serial.println("Parsing input failed!");
+        return;
+      }
+
+      Serial.print("JSON object = ");
+      Serial.println(myObject);
+
+      JSONVar keys = myObject[0].keys();
+
+      for (int i = 0; i < keys.length(); i++) {
+        JSONVar value = myObject[0][keys[i]];
+        String jsonString = JSON.stringify(value);
+        Serial.print(keys[i]);
+        Serial.print(" = ");
+        Serial.println(value);
+        sensorReadingsArr[i] = value;
+      }
+
+      Serial.println(sensorReadingsArr[0]);
+
+      if(sensorReadingsArr[0] == "1"){
+        openKastje = "1";
+      } else if(sensorReadingsArr[0] == "2"){
+        openKastje = "2";
+      } else if(sensorReadingsArr[0] == "A"){
+        openKastje = "A";
+      } else {
+        openKastje = "0";
+      }
+    }
 }
 
 void solenoid(){
@@ -376,9 +440,10 @@ void solenoid(){
             digitalWrite(slotMidden,LOW);
             digitalWrite(slotOnder,LOW);
         }
-        delay(50000);
         //openkastje kastnr op 0 zetten
 }
+
+
 
 
 
@@ -444,7 +509,10 @@ void setup()
 void loop()
 {
   readRFID();
-  getKast();
+  // getKast();
+  getkastnr();
+
+
 
   if(openKastje == "A"){
     Serial.println("solenoid alles");
