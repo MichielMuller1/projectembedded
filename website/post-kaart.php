@@ -12,7 +12,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $api_key = test_input($_POST["api_key"]);
     if($api_key == $api_key_value) {
         $num = test_input($_POST["num"]);
-               
+        
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        // Check connection
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        } 
+        
         $t=time();
         $date = "'" . date("Y-m-d H:i:s",$t) . "'";
         $rnum = $vn = $an = $ad = "0";
