@@ -375,6 +375,36 @@ void solenoid(int solenoid, int magneetcontact){
   //schrijf naar openkastje kastNr een 0
 }
 
+void solenoid(){
+  //alle solenoids open
+        digitalWrite(slotBoven,HIGH);
+        digitalWrite(slotMidden,HIGH);
+        digitalWrite(slotOnder,HIGH);
+
+        while (digitalRead(magneetMidden)==0)
+        {
+            delay(20);
+            Serial.println("magneet dicht");
+        }
+        if(digitalRead(magneetMidden)==1){
+            Serial.println("magneetOpen");
+            int time = millis();
+            while (millis()<(time+5000))
+            {
+                delay(100);
+                Serial.println("wachten op time");
+            }
+            Serial.println("terug dicht");
+            postopenkastjes();
+            digitalWrite(slotBoven,LOW);
+            digitalWrite(slotMidden,LOW);
+            digitalWrite(slotOnder,LOW);
+            
+        }
+        //openkastje kastnr op 0 zetten
+        
+}
+
 void getkastnr() {
   if (WiFi.status() == WL_CONNECTED) {
 
@@ -415,33 +445,7 @@ void getkastnr() {
     }
 }
 
-void solenoid(){
-  //alle solenoids open
-        digitalWrite(slotBoven,HIGH);
-        digitalWrite(slotMidden,HIGH);
-        digitalWrite(slotOnder,HIGH);
 
-        while (digitalRead(magneetMidden)==0)//zolang het nog dicht is niets doen
-        {
-            delay(20);
-            Serial.println("magneet dicht");
-        }
-        if(digitalRead(magneetMidden)==1){//als het open is 5 seconden wachten
-            Serial.println("magneetOpen");
-            int time = millis();
-            while (millis()<(time+5000))//zolang er geen 5 seconden verstreken zijn
-            {
-                delay(100);
-                Serial.println("wachten op time");
-            }
-            Serial.println("terug dicht");
-            //kastje is al zeker 5 seconden open dus de solenoids mogen terug dicht.
-            digitalWrite(slotBoven,LOW);
-            digitalWrite(slotMidden,LOW);
-            digitalWrite(slotOnder,LOW);
-        }
-        //openkastje kastnr op 0 zetten
-}
 
 
 
@@ -516,6 +520,9 @@ void loop()
 
   if(openKastje == "A"){
     Serial.println("solenoid alles");
+    // solenoid(slotBoven,magneetBoven);
+    // solenoid(slotMidden,magneetMidden);
+    // solenoid(slotOnder,magneetOnder);
     solenoid();
   }else if (openKastje == "1")
   {
