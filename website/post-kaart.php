@@ -8,9 +8,9 @@ $api_key_value = "tPmAT5Ab3j7F7";
 
 $api_key= $num = $rnum = $vn = $an = $ad = "";
 
-if ($_SERVER["REQUEST_METHOD"] == "GET") {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $api_key = test_input($_POST["api_key"]);
-    //if($api_key == $api_key_value) {
+    if($api_key == $api_key_value) {
         $conn = new mysqli($servername, $username, $password, $dbname);
         // Check connection
         if ($conn->connect_error) {
@@ -68,10 +68,10 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     
          $conn->close();
     
-    //}
-    //else {
-    //    echo "Wrong API Key provided.";
-   // }
+    }
+    else {
+        echo "Wrong API Key provided.";
+    }
 
 }
 else {
