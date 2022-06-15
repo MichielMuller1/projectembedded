@@ -17,7 +17,8 @@ const char* serverName1 = "http://embed-dev-1.stuvm.be/kastjes.php";
 String apiKeyValue = "tPmAT5Ab3j7F7";
 
 String sensorReadings;
-String sensorReadingsArr[100];
+String sensorReadingsArr1[100];
+String sensorReadingsArr2[100];
 
 //////////////////////////////////////
 //////////////////////////////////////
@@ -196,19 +197,19 @@ void effectQuinten(){
   }
 }
 
-void ledstrip(String kleurWaar){
-  if (kleurWaar=="onderRood")
+void ledstrip(String boven, String onder){
+  if (boven=="1" and onder=="1")
   {
-    writeBlockData(GP1, 1);
-  }else if (kleurWaar=="onderGroen")
+    writeBlockData(GP1, 17);
+  }else if (boven=="1" and onder=="0")
   {
-    writeBlockData(GP1,2);
-  }else if (kleurWaar=="bovenRood")
+    writeBlockData(GP1,18);
+  }else if (boven=="0" and onder=="0")
   {
-    writeBlockData(GP1,16);
-  }else if (kleurWaar=="bovenGroen")
+    writeBlockData(GP1,34);
+  }else if (boven=="0" and onder=="1")
   {
-    writeBlockData(GP1,32);
+    writeBlockData(GP1,33);
   }else{
     writeBlockData(GP1,0);
   }
@@ -240,30 +241,21 @@ void getKast(){
         Serial.print(keys[i]);
         Serial.print(" = ");
         Serial.println(value);
-        sensorReadingsArr[i] = value;
+        sensorReadingsArr1[i] = value;
       }
 
-      if(sensorReadingsArr[4] == "1"){
-        ledstrip("bovenRood");
-      } else {
-        ledstrip("bovenGroen");
-      }
+      JSONVar keys1 = myObject[1].keys();
 
-      JSONVar keys = myObject[1].keys();
-
-      for (int i = 0; i < keys.length(); i++) {
-        JSONVar value = myObject[1][keys[i]];
+      for (int i = 0; i < keys1.length(); i++) {
+        JSONVar value = myObject[1][keys1[i]];
         String jsonString = JSON.stringify(value);
-        Serial.print(keys[i]);
+        Serial.print(keys1[i]);
         Serial.print(" = ");
         Serial.println(value);
-        sensorReadingsArr[i] = value;
+        sensorReadingsArr2[i] = value;
       }
-      if(sensorReadingsArr[4] == "1"){
-        ledstrip("onderRood");
-      } else {
-        ledstrip("onderGroen");
-      }
+
+      ledstrip(sensorReadingsArr1[4],sensorReadingsArr2[4]);
     }
   }
 
