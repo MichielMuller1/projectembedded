@@ -1,10 +1,10 @@
 #include <Arduino.h>
-#include <SoftwareSerial.h>//met deze library kan je pinnen aanduiden als rx en tx om zo meerdere serial verbindingen op de esp32 te hebben.
-//software serial object om te communiceren met de SIM800L
+#include <SoftwareSerial.h>
 #include <Wire.h>
 
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <Arduino_JSON.h>
 
 #include <SPI.h>
 #include <MFRC522.h>
@@ -13,7 +13,7 @@
 const char* ssid     = "embedded";
 const char* password = "IoTembedded";
 const char* serverName = "http://embed-dev-1.stuvm.be/post-kaart.php";
-const char* serverName1 = "http://embed-dev-1.stuvm.be/kaarten.php";
+const char* serverName1 = "http://embed-dev-1.stuvm.be/kastjes.php";
 String apiKeyValue = "tPmAT5Ab3j7F7";
 
 String sensorReadings;
@@ -85,6 +85,35 @@ String rnummer = "0";
 //////////////////////////////////////
 //////////////////////////////////////
 
+/////////////////////////////////////
+//get
+////////////////////////////////////
+String httpGETRequest(const char* serverName) {
+  WiFiClient client;
+  HTTPClient http;
+
+  // Your Domain name with URL path or IP address with path
+  http.begin(client, serverName);
+
+  // Send HTTP POST request
+  int httpResponseCode = http.GET();
+
+  String payload = "{}";
+
+  if (httpResponseCode > 0) {
+    Serial.print("HTTP Response code: ");
+    Serial.println(httpResponseCode);
+    payload = http.getString();
+  }
+  else {
+    Serial.print("Error code: ");
+    Serial.println(httpResponseCode);
+  }
+  // Free resources
+  http.end();
+
+  return payload;
+}
 
 ////////////////////////////////////
 //gsmModule
@@ -184,6 +213,46 @@ void ledstrip(String kleurWaar){
     writeBlockData(GP1,0);
   }
 }
+
+////////////////////////////////////
+//get kastjes ledstrip
+////////////////////////////////////
+void getKast(){
+    if (WiFi.status() == WL_CONNECTED) {
+
+      sensorReadings = httpGETRequest(serverName1);
+      Serial.println(sensorReadings);
+      JSONVar myObject = JSON.parse(sensorReadings);
+
+      if (JSON.typeof(myObject) == "undefined") {
+        Serial.println("Parsing input failed!");
+        return;
+      }
+
+      Serial.print("JSON object = ");
+      Serial.println(myObject);
+
+      JSONVar keys = myObject[0].keys();
+
+      for (int i = 0; i < keys.length(); i++) {
+        JSONVar value = myObject[0][keys[i]];
+        String jsonString = JSON.stringify(value);
+        Serial.print(keys[i]);
+        Serial.print(" = ");
+        Serial.println(value);
+        sensorReadingsArr[i] = value;
+      }
+
+      Serial.println(sensorReadingsArr[4]);
+
+      if(sensorReadingsArr[4] == "1"){
+        ledstrip("bovenRood");
+      } else {
+        ledstrip("bovenGroen");
+        Serial.println("groen");
+      }
+    }
+  }
 
 //////////////////////////////////
 //kaartlezer
@@ -340,6 +409,8 @@ void setup()
   SPI.begin();
   rfid.PCD_Init();
 
+  
+
   //wifi
   WiFi.begin(ssid, password);
   Serial.println("Connecting");
@@ -359,8 +430,9 @@ void setup()
 //////////////////////////////////
 void loop()
 {
-    readRFID();
-  
+  readRFID();
+
+  getKast();
 
   if(openKastje == "A"){
     Serial.println("solenoid alles");
