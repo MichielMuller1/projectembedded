@@ -36,6 +36,8 @@ if ($result = $conn->query($sql)) {
 		'aantalFouten' => $row_aantalFouten,
 		'rnummerTerugbrenger' => $row_rnummerTerugbrenger
 			     );
+		$arr[$inc] = $data;
+		$inc++;
 		
     }
 	header('Content-type: application/json');
