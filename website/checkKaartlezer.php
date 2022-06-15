@@ -2,12 +2,12 @@
 session_start();
 include 'db.php';
 
-$stmt = $conn->prepare("select kaartnummer from kaartlezer");
+$stmt = $conn->prepare("select ID,kaartnummer from kaartlezer");
 $stmt->execute();
-$result1 = $stmt->fetchObject();
-echo $result1;
+$result1 = $stmt->fetchAll();
+echo $result1[0][1];
 
-$kaartnummer = $result1;
+$kaartnummer = $result1[0][1];
 
 //$stmt = $conn->prepare("select rnummer,voornaam,achternaam,admin from kaarten where UID = $kaartnummer");
 //$result2 = $stmt->execute();
