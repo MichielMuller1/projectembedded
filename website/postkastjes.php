@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "New record created successfully";
         } 
         else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
+            echo "Error: " . $sql2 . "<br>" . $conn->error;
         }
     
         $conn->close();
