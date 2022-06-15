@@ -73,6 +73,11 @@ const int slotOnder = 21;
 const int relaisBoven = 32;
 const int relaisOnder = 0; // de code om deze relais aan te zetten is writeBlockData(GP0,0); om hem uit te zetten writeBlockData(GP0,1);
 
+//solentoid
+String openKastje = "1";
+
+String rnummer = "0";
+
 //////////////////////////////////////
 //////////////////////////////////////
 //functies
@@ -183,6 +188,56 @@ void ledstrip(String kleurWaar){
 //kaartlezer
 //////////////////////////////////
 
+//////////////////////////////////
+//solenoid
+//////////////////////////////////
+
+void solenoid(int solenoid, int magneetcontact){
+  digitalWrite(solenoid,HIGH);
+  while (digitalRead(magneetcontact)==0){
+    delay(20);
+  }
+  if(digitalRead(magneetcontact)==1){//als het open is 5 seconden wachten
+    int time = millis();
+    while (millis()<(time+5000))//zolang er geen 5 seconden verstreken zijn
+    {
+        delay(100);
+    }
+  }
+  digitalWrite(solenoid,LOW);
+  delay(50000);
+  //schrijf naar openkastje kastNr een 0
+}
+
+void solenoid(){
+  //alle solenoids open
+        digitalWrite(slotBoven,HIGH);
+        digitalWrite(slotMidden,HIGH);
+        digitalWrite(slotOnder,HIGH);
+
+        while (digitalRead(magneetMidden)==0)//zolang het nog dicht is niets doen
+        {
+            delay(20);
+            Serial.println("magneet dicht");
+        }
+        if(digitalRead(magneetMidden)==1){//als het open is 5 seconden wachten
+            Serial.println("magneetOpen");
+            int time = millis();
+            while (millis()<(time+5000))//zolang er geen 5 seconden verstreken zijn
+            {
+                delay(100);
+                Serial.println("wachten op time");
+            }
+            Serial.println("terug dicth");
+            //kastje is al zeker 5 seconden open dus de solenoids mogen terug dicht.
+            digitalWrite(slotBoven,LOW);
+            digitalWrite(slotMidden,LOW);
+            digitalWrite(slotOnder,LOW);
+        }
+        delay(50000);
+        //openkastje kastnr op 0 zetten
+}
+
 
 
 //////////////////////////////////
@@ -229,5 +284,24 @@ void setup()
 //////////////////////////////////
 void loop()
 {
+
+  if(openKastje == "A"){
+    Serial.println("solenoid alles");
+    solenoid();
+  }else if (openKastje == "1")
+  {
+    Serial.println("solenoid 1");
+    solenoid(slotBoven,magneetBoven);
+  }else if (openKastje == "2")
+  {
+    Serial.println("solenoid 2");
+    solenoid(slotOnder,magneetOnder);
+  }
+
+  if(rnummer == "u0140140"){
+    effectQuinten();
+  }
+  
+  
  
 }
