@@ -343,7 +343,7 @@ void printHex(byte *buffer, byte bufferSize) {
         }
         // Free resources
         http.end();
-      
+    rnummer = HEXA;
     HEXA ="";
   }
  
@@ -613,7 +613,7 @@ void loop()
     solenoid(slotOnder,magneetOnder);
   }
 
-  if(rnummer == "u0140140"){
+  if(rnummer == " 04 0b 69 ba 0e 62 80"){
     effectQuinten();
   }
  
