@@ -20,6 +20,8 @@ $sql = "SELECT * FROM slechteHuurders";
 
 if ($result = $conn->query($sql)) {
     while ($row = $result->fetch_assoc()) {
+		$arr = [];
+    	$inc = 0;
 
 	$row_rnummerHuurder = $row["rnummerHuurder"];
 	$row_aantalFouten = $row["aantalFouten"];
