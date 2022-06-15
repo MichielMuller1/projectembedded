@@ -18,6 +18,10 @@ $voornaam = $result2[0][1];
 $achternaam = $result2[0][2];
 $admin = $result2[0][3];
 
+$sql="delete from `kaartlezer` where ID=1";
+$conn->exec($sql);
+
+
 $sql="INSERT INTO `kaartlezer` (`ID`, `tijd`, `kaartnummer`, `rnummer`, `voornaam`, `achternaam`, `admin`) VALUES ('1', $tijd, $kaartnummer, $rnummer, $voornaam, $achternaam, $admin)";
 $conn->exec($sql);
 
