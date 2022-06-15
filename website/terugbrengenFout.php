@@ -33,7 +33,8 @@ session_start();
         <p>Laptop gevonden of terugbrengen voor iemand anders?</p>
         <div><label for="laptopNr">laptopnummer</label>
             <input type="number" name="laptopNr" id="laptopNr" required></div>
-        <div><label for="reden">reden</label>
+        <label for="reden">reden</label>
+        <div class="dropdown">
             <select name="reden" id="reden" required>
                 <option disabled selected value>Kies een optie</option>
                 <option value="gevonden">laptop gevonden</option>
