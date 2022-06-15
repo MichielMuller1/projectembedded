@@ -8,8 +8,8 @@
 
 #include <SPI.h>
 #include <MFRC522.h>
-#define SS_PIN 23
-#define RST_PIN 22
+#define SS_PIN 32
+#define RST_PIN 14
 const char* ssid     = "embedded";
 const char* password = "IoTembedded";
 const char* serverName = "http://embed-dev-1.stuvm.be/post-kaart.php";
