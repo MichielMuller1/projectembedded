@@ -11,31 +11,59 @@ $api_key= $num = $rnum = $vn = $an = $ad = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $api_key = test_input($_POST["api_key"]);
     if($api_key == $api_key_value) {
-        $num = test_input($_POST["num"]);
-        $rnum = test_input($_POST["rnum"]);
-        $vn = test_input($_POST["vn"]);
-        $an = test_input($_POST["an"]);
-        $ad = test_input($_POST["ad"]);
-
-        // Create connection
         $conn = new mysqli($servername, $username, $password, $dbname);
         // Check connection
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
         } 
-        $t=time();
-        $date = "'" . date("Y-m-d H:i:s",$t) . "'";
+        $sqlget = "SELECT * FROM kaarten";
+        if ($result = $conn->query($sql)) {
+            $arr = [];
+            $inc = 0;
+            while ($row = $result->fetch_assoc()) {
+                $row_uid = $row["UID"];
+                $row_rnummer = $row["rnummer"];
+                $row_voornaam = $row["voornaam"];
+                $row_achternaam = $row["achternaam"];
+            
         
-        $sql = "INSERT INTO `kaartlezer` (`ID`, `tijd`, `kaartnummer`, `rnummer`, `voornaam`, `achternaam`, `admin`) VALUES (1, $date, $num, $rnum, $vn, $an, $ad)";
-        
-        if ($conn->query($sql) === TRUE) {
-            echo "New record created successfully";
-        } 
-        else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
+                
+            $data = array(
+                'uid' => $row_uid,
+                'rnummer' => $row_rnummer, 
+                'voornaam' => $row_voornaam, 
+                'achternaam' => $row_achternaam
+                         );
+            $arr[$inc] = $data;
+            $inc++;
+            }
         }
+
+        $num = test_input($_POST["num"]);
+
+        for($x = 0; $x < count($arr); $x++){
+            echo $arr[$x];
+        }
+
+
+
+
+        
+        
+        // $t=time();
+        // $date = "'" . date("Y-m-d H:i:s",$t) . "'";
+        
+        // $sql = "INSERT INTO `kaartlezer` (`ID`, `tijd`, `kaartnummer`, `rnummer`, `voornaam`, `achternaam`, `admin`) VALUES (NULL, $date, $num, $rnum, $vn, $an, $ad)";
+        
+        // if ($conn->query($sql) === TRUE) {
+        //     echo "New record created successfully";
+        // } 
+        // else {
+        //     echo "Error: " . $sql . "<br>" . $conn->error;
+        // }
     
-        $conn->close();
+         $conn->close();
+    
     }
     else {
         echo "Wrong API Key provided.";
