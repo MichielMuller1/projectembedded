@@ -1,0 +1,35 @@
+//relais
+const int relaisBoven = 1;
+const int relaisOnder = 0; // de code om deze relais aan te zetten is writeBlockData(GP0,0); om hem uit te zetten writeBlockData(GP0,1);
+int relaisNummer = 1;
+int relaisTijd = millis();
+
+
+//////////////////////////////////
+//relais
+//////////////////////////////////
+void relais(){
+  if(millis()>(relaisTijd+30000)){//na 1 minuut van stopcontact veranderen
+    if(relaisNummer==1){
+      writeBlockData(GP0,1);
+      relaisNummer = 0;
+      relaisTijd = millis();
+    }else{
+      writeBlockData(GP0,2);
+      relaisNummer = 1;
+      relaisTijd = millis();
+    }
+  }
+
+}
+
+
+
+
+//deze lijn staat in setup maar moet aangepast worden naar wat hieronder staat
+writeBlockData(GP0, B00000010);//de relais
+
+
+
+in loop gewoon dit oproepen
+relais();
