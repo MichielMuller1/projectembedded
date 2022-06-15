@@ -16,12 +16,15 @@ const char* serverName = "http://embed-dev-1.stuvm.be/post-kaart.php";
 const char* serverName1 = "http://embed-dev-1.stuvm.be/kastjes.php";
 const char* serverName2 = "http://embed-dev-1.stuvm.be/postopenkastjes.php";
 const char* serverName3 = "http://embed-dev-1.stuvm.be/openkastjes.php";
+const char* serverName4 = "http://embed-dev-1.stuvm.be/postkastjes.php";
 String apiKeyValue = "tPmAT5Ab3j7F7";
 
 String sensorReadings;
 String sensorReadingsArr[100];
 String sensorReadingsArr1[100];
 String sensorReadingsArr2[100];
+
+#define battery 35
 
 //////////////////////////////////////
 //////////////////////////////////////
@@ -46,6 +49,7 @@ const int stroomspoelBeneden = A3;
 // VREF: Analog reference
 #define VREF 3.3  //referentie voltage is 3.3V van de esp32
 
+uint8_t percentageLast = 0;
 
 //van de io expansion
 //https://www.instructables.com/IO-Expander-for-ESP32-ESP8266-and-Arduino/
@@ -75,13 +79,27 @@ const int slotMidden = 12;
 const int slotOnder = 21;
 
 //relais
-const int relaisBoven = 32;
+const int relaisBoven = 1;
 const int relaisOnder = 0; // de code om deze relais aan te zetten is writeBlockData(GP0,0); om hem uit te zetten writeBlockData(GP0,1);
+int relaisNummer = 1;
+int relaisTijd = millis();
 
-//solentoid
+//solenoid
 String openKastje = "0";
 String kastNr = "0";
 String rnummer = "0";
+
+int period1 = 1000;
+unsigned long time_now1 = 0;
+
+int period2 = 1000;
+unsigned long time_now2 = 0;
+
+int period3 = 2000;
+unsigned long time_now3 = 0;
+
+int period4 = 3000;
+unsigned long time_now4 = 0;
 
 //////////////////////////////////////
 //////////////////////////////////////
@@ -177,6 +195,36 @@ float readACCurrentValue(int ACPin)
   return ACCurrtntValue/5;//delen door 5 omdat de draad 5 keer door de spoel gaat
 }
 
+void current(){
+  float m1 = readACCurrentValue(stroomspoelBoven);
+  float m2 = readACCurrentValue(stroomspoelBeneden);
+  if (WiFi.status() == WL_CONNECTED) {
+    WiFiClient client;
+    HTTPClient http;
+
+    // Your Domain name with URL path or IP address with path
+    http.begin(client, serverName4);
+        http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+        String httpRequestData = "api_key=" + apiKeyValue + "&oplaadStatus='" + m1 + "'" + "&oplaadStatus2='" + m2 + "'";
+        Serial.print("httpRequestData: ");
+        Serial.println(httpRequestData);
+
+        int httpResponseCode = http.POST(httpRequestData);
+
+        if (httpResponseCode > 0) {
+          Serial.print("HTTP Response code: ");
+          Serial.println(httpResponseCode);
+        }
+        else {
+          Serial.print("Error code: ");
+          Serial.println(httpResponseCode);
+        }
+        // Free resources
+        http.end();
+
+  }
+}
+
 //////////////////////////////////
 //multiplexer aansturen
 //////////////////////////////////
@@ -257,8 +305,6 @@ void getKast(){
         Serial.println(value);
         sensorReadingsArr2[i] = value;
       }
-
-      Serial.println(sensorReadingsArr1[4]+" dskl     " +sensorReadingsArr2[4]);
 
       ledstrip(sensorReadingsArr1[4],sensorReadingsArr2[4]);
     }
@@ -376,33 +422,23 @@ void solenoid(int solenoid, int magneetcontact){
 }
 
 void solenoid(){
-  //alle solenoids open
-        digitalWrite(slotBoven,HIGH);
-        digitalWrite(slotMidden,HIGH);
-        digitalWrite(slotOnder,HIGH);
-
-        while (digitalRead(magneetMidden)==0)
-        {
-            delay(20);
-            Serial.println("magneet dicht");
-        }
-        if(digitalRead(magneetMidden)==1){
-            Serial.println("magneetOpen");
-            int time = millis();
-            while (millis()<(time+5000))
-            {
-                delay(100);
-                Serial.println("wachten op time");
-            }
-            Serial.println("terug dicht");
-            postopenkastjes();
-            digitalWrite(slotBoven,LOW);
-            digitalWrite(slotMidden,LOW);
-            digitalWrite(slotOnder,LOW);
-            
-        }
-        //openkastje kastnr op 0 zetten
-        
+  digitalWrite(slotBoven,HIGH);
+  digitalWrite(slotOnder,HIGH);
+  digitalWrite(slotMidden,HIGH);
+  while (digitalRead(magneetMidden)==0){
+    delay(20);
+  }
+  if(digitalRead(magneetMidden)==1){//als het open is 5 seconden wachten
+    int time = millis();
+    while (millis()<(time+5000))//zolang er geen 5 seconden verstreken zijn
+    {
+        delay(100);
+    }
+  }
+  postopenkastjes();
+  digitalWrite(slotBoven,LOW);
+  digitalWrite(slotOnder,LOW);
+  digitalWrite(slotMidden,LOW);
 }
 
 void getkastnr() {
@@ -445,11 +481,41 @@ void getkastnr() {
     }
 }
 
+//////////////////////////////////
+//batterij
+//////////////////////////////////
 
+void readBattery(){
+  uint8_t percentage = 100;
+  float voltage = analogRead(battery) / 4096.0 * 7.23;      // LOLIN D32 (no voltage divider need already fitted to board.or NODEMCU ESP32 with 100K+100K voltage divider
+  Serial.println("Voltage = " + String(voltage));
+  percentage = 2808.3808 * pow(voltage, 4) - 43560.9157 * pow(voltage, 3) + 252848.5888 * pow(voltage, 2) - 650767.4615 * voltage + 626532.5703;
+  if (voltage > 4.19) percentage = 100;
+  else if (voltage <= 3.50) percentage = 0;
+  
+  if((percentageLast -5) > percentage){
+    send_text("stroom is uitgevallen");
+  }
+  percentageLast = percentage;
+}
 
+//////////////////////////////////
+//relais
+//////////////////////////////////
+void relais(){
+  if(millis()>(relaisTijd+300000)){//na 1 minuut van stopcontact veranderen
+    if(relaisNummer==1){
+      writeBlockData(GP0,1);
+      relaisNummer = 0;
+      relaisTijd = millis();
+    }else{
+      writeBlockData(GP0,2);
+      relaisNummer = 1;
+      relaisTijd = millis();
+    }
+  }
 
-
-
+}
 
 //////////////////////////////////
 //setup
@@ -474,7 +540,7 @@ void setup()
   writeBlockData(IODIR0, 0x00);
   writeBlockData(IODIR1, 0x00);
   //alle pinnen op 0 zetten
-  writeBlockData(GP0, B00000001);//de relais
+  writeBlockData(GP0, B00000010);//de relais
   writeBlockData(GP1, B00000000);//de leds
 
   //magneetcontacten
@@ -486,6 +552,8 @@ void setup()
   pinMode(slotBoven,OUTPUT);
   pinMode(slotMidden,OUTPUT);
   pinMode(slotOnder,OUTPUT);
+
+  pinMode(battery, INPUT);
 
   //kaartlezer
   SPI.begin();
@@ -513,10 +581,21 @@ void setup()
 void loop()
 {
   readRFID();
-  // getKast();
-  getkastnr();
-
-
+  relais();
+  
+  if(millis() >= time_now1 + period1){
+    getKast();
+  }
+  if(millis() >= time_now2 + period2){
+    getkastnr();
+  }
+  if(millis() >= time_now3 + period3){
+    readBattery();
+  }
+  if(millis() >= time_now4 + period4){
+    current();
+  }
+  
 
   if(openKastje == "A"){
     Serial.println("solenoid alles");
