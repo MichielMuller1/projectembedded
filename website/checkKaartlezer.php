@@ -19,10 +19,6 @@ $stmt = $conn->prepare("select rnummer,voornaam,achternaam,admin from kaarten wh
 $stmt->execute();
 $result2 = $stmt->fetchAll();
 
-if (empty($result2)){
-    header("Location: afmelden.php");
-}
-
 $rnummer = $result2[0][0];
 $voornaam = $result2[0][1];
 $achternaam = $result2[0][2];
