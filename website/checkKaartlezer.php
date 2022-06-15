@@ -1,6 +1,8 @@
 <?php
 session_start();
 include 'db.php';
+date_default_timezone_set("Europe/Brussels");
+$tijd = date('Y-m-d H:i:s');
 
 $stmt = $conn->prepare("select ID,kaartnummer from kaartlezer");
 $stmt->execute();
