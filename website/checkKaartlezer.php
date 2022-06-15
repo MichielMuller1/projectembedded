@@ -2,6 +2,25 @@
 session_start();
 include 'db.php';
 
+$stmt = $conn->prepare("select kaartnummer from kaartlezer");
+$stmt->execute();
+$result1 = $stmt->fetchAll();
+echo $result1;
+
+$kaartnummer = $result1[0][1];
+
+$stmt = $conn->prepare("select rnummer,voornaam,achternaam,admin from kaarten where UID = $kaartnummer");
+$result2 = $stmt->execute();
+
+echo $result2;
+$rnummer = $result2[0][0];
+$voornaam = $result2[0][1];
+$achternaam = $result2[0][2];
+$admin = $result2[0][3];
+
+$sql="INSERT INTO `kaartlezer` (`ID`, `tijd`, `kaartnummer`, `rnummer`, `voornaam`, `achternaam`, `admin`) VALUES ('1', $tijd, $kaartnummer, $rnummer, $voornaam, $achternaam, $admin)";
+$conn->exec($sql);
+
 
 $stmt = $conn->prepare("select * from kaartlezer");
 $stmt->execute();
@@ -10,31 +29,31 @@ $result = $stmt->fetchAll();
 //    echo $result[0][1] . "   " . $result[0][2];
 
 
-if (!empty($result)) {
-    $_SESSION['rnummer'] = $result[0][3];
-    $_SESSION['admin'] = $result[0][6];
-    if ($_SESSION['rnummer']=="u0140140"){
-
-        header("Location: Quinten.php");
-    }else{
-        if ($_SESSION['admin']==1){
-            header("Location: adminIndex.php");
-
-        }else{
-            if(isset($_POST['uitlenen'])){
-                header("Location: checkUitlenen.php");
-            }
-            if(isset($_POST['terugbrengen'])){
-                header("Location: checkTerugbrengen.php");
-            }
-        }
-    }
-
-
-
-
-}else{
-    $_SESSION['rnummer'] = 0;
-    header("Location: indexFoutmelding.php");
-}
+//if (!empty($result)) {
+//    $_SESSION['rnummer'] = $result[0][3];
+//    $_SESSION['admin'] = $result[0][6];
+//    if ($_SESSION['rnummer']=="u0140140"){
+//
+//        header("Location: Quinten.php");
+//    }else{
+//        if ($_SESSION['admin']==1){
+//            header("Location: adminIndex.php");
+//
+//        }else{
+//            if(isset($_POST['uitlenen'])){
+//                header("Location: checkUitlenen.php");
+//            }
+//            if(isset($_POST['terugbrengen'])){
+//                header("Location: checkTerugbrengen.php");
+//            }
+//        }
+//    }
+//
+//
+//
+//
+//}else{
+//    $_SESSION['rnummer'] = 0;
+//    header("Location: indexFoutmelding.php");
+//}
 

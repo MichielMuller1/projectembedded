@@ -20,7 +20,7 @@ $datum = date('Y-m-d');
 $sql= "update kastjes set tijd='$tijd', uitgeleend=0, uitgeleendDoor='0' where kastNr=$uitgeleendKastje";
 $conn->exec($sql);
 
-$sql="INSERT INTO `terugbrengLog` (`ID`, `tijd`, `datum`, `rnummer`) VALUES ('$tijd','$datum','".$_SESSION['rnummer']."')";
+$sql="INSERT INTO `terugbrengLog` (`tijd`, `datum`, `rnummer`) VALUES ('$tijd','$datum','".$_SESSION['rnummer']."')";
 $conn->exec($sql);
 
 //in de database zetten dat het kastje open mag

@@ -17,10 +17,8 @@ include "findFreeLaptop.php"
 <body class="container">
 <div class="center">
     <form action="adminControl.php" method="post">
-        <ol>
-            <li>scan je studentenkaart</li>
-            <li>kies één van de twee opties</li>
-        </ol>
+        <p>Hallo Admin</p>
+        <p>Maak een keuze.</p>
         <div class="d-flex">
             <button type="submit" class="mr-2" id="uitlenen" name="uitlenen" value="1">uitlenen</button>
             <button type="submit" class="ml-2" id="terugbrengen" name="terugbrengen" value="2">terugbrengen</button>

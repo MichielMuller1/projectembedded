@@ -7,6 +7,7 @@ $uitgeleendKastje = $_SESSION["gevondenLaptopNr"];
 
 date_default_timezone_set("Europe/Brussels");
 $tijd = date('Y-m-d H:i:s');
+$datum = date('Y-m-d');
 $sql= "update kastjes set tijd='$tijd', uitgeleend=0, uitgeleendDoor='0' where kastNr=$uitgeleendKastje";
 $conn->exec($sql);
 
@@ -14,6 +15,9 @@ $conn->exec($sql);
 date_default_timezone_set("Europe/Brussels");
 $tijd = date('Y-m-d H:i:s');
 $sql = "update openKastjes set tijd='$tijd', kastNr = '$uitgeleendKastje' where ID=1";
+$conn->exec($sql);
+
+$sql="INSERT INTO `terugbrengLog` (`tijd`, `datum`, `rnummer`) VALUES ('$tijd','$datum','".$_SESSION['rnummer']."')";
 $conn->exec($sql);
 
 ?>
