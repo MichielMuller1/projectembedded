@@ -25,7 +25,7 @@ $sql="delete from `kaartlezer` where ID=1";
 $conn->exec($sql);
 
 
-$sql="INSERT INTO `kaartlezer` (`ID`, `tijd`, `kaartnummer`, `rnummer`, `voornaam`, `achternaam`, `admin`) VALUES ('1', $tijd, $kaartnummer, $rnummer, $voornaam, $achternaam, $admin)";
+$sql="INSERT INTO `kaartlezer` (`ID`, `tijd`, `kaartnummer`, `rnummer`, `voornaam`, `achternaam`, `admin`) VALUES ('1', '$tijd', '$kaartnummer', '$rnummer', '$voornaam', '$achternaam', $admin)";
 $conn->exec($sql);
 
 
