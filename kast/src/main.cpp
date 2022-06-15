@@ -210,6 +210,38 @@ void solenoid(int solenoid, int magneetcontact){
 }
 
 void solenoid(){
+  if (WiFi.status() == WL_CONNECTED) {
+
+      sensorReadings = httpGETRequest(serverName3);
+      Serial.println(sensorReadings);
+      JSONVar myObject = JSON.parse(sensorReadings);
+
+      if (JSON.typeof(myObject) == "undefined") {
+        Serial.println("Parsing input failed!");
+        return;
+      }
+
+      Serial.print("JSON object = ");
+      Serial.println(myObject);
+
+      JSONVar keys = myObject[0].keys();
+
+      for (int i = 0; i < keys.length(); i++) {
+        JSONVar value = myObject[0][keys[i]];
+        String jsonString = JSON.stringify(value);
+        Serial.print(keys[i]);
+        Serial.print(" = ");
+        Serial.println(value);
+        sensorReadingsArr[i] = value;
+      }
+
+      Serial.println(sensorReadingsArr[0]);
+
+      if(sensorReadingsArr[0] == "1"){
+        openKastje = "1";
+      } 
+    }
+
   //alle solenoids open
         digitalWrite(slotBoven,HIGH);
         digitalWrite(slotMidden,HIGH);
@@ -236,6 +268,33 @@ void solenoid(){
         }
         delay(50000);
         //openkastje kastnr op 0 zetten
+}
+
+void postopenkastjes() {
+  //openkastje kastnr op 0 zetten
+              if (WiFi.status() == WL_CONNECTED) {
+                  WiFiClient client;
+                  HTTPClient http;
+
+    // Your Domain name with URL path or IP address with path
+        http.begin(client, serverName2);
+        http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+        String httpRequestData = "api_key=" + apiKeyValue + "&num='" + kastNr + "'";
+        Serial.print("httpRequestData: ");
+        Serial.println(httpRequestData);
+
+        int httpResponseCode = http.POST(httpRequestData);
+
+        if (httpResponseCode > 0) {
+          Serial.print("HTTP Response code: ");
+          Serial.println(httpResponseCode);
+        }
+        else {
+          Serial.print("Error code: ");
+          Serial.println(httpResponseCode);
+        }
+        // Free resources
+        http.end();
 }
 
 
