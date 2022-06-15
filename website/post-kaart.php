@@ -37,8 +37,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $arr[$inc] = $data;
             $inc++;
             }
-            header('Content-type: application/json');
-	        echo json_encode($arr);
     
             $result->free();
         }
@@ -46,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $num = test_input($_POST["num"]);
 
         for($x = 0; $x < count($arr); $x++){
-            echo $arr;
+            echo $arr[$x];
         }
 
 
