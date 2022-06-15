@@ -1,5 +1,5 @@
 <?php
-$sName = "10.1.0.57";
+$sName = "localhost";
 $uName = "ubuntu";
 $pass = "Patje123";
 $db_name = "laptops";
