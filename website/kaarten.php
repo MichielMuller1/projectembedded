@@ -26,6 +26,7 @@ if ($result = $conn->query($sql)) {
         $row_rnummer = $row["rnummer"];
 		$row_voornaam = $row["voornaam"];
         $row_achternaam = $row["achternaam"];
+        $row_admin = $row["admin"];
 	
 
 		
@@ -33,7 +34,8 @@ if ($result = $conn->query($sql)) {
 		'uid' => $row_uid,
 		'rnummer' => $row_rnummer, 
 		'voornaam' => $row_voornaam, 
-		'achternaam' => $row_achternaam
+		'achternaam' => $row_achternaam,
+        'admin' => $row_admin
 			     );
     $arr[$inc] = $data;
     $inc++;
