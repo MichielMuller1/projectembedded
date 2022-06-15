@@ -1,26 +1,25 @@
 #include <Arduino.h>
-#include <SoftwareSerial.h>//met deze library kan je pinnen aanduiden als rx en tx om zo meerdere serial verbindingen op de esp32 te hebben.
-//software serial object om te communiceren met de SIM800L
+#include <SoftwareSerial.h>
 #include <Wire.h>
 
-#include <SPI.h>//https://www.arduino.cc/en/reference/SPI
-//we gebruiken de spi library om het spi protocol op de esp te kunnen beginnen
-#include <MFRC522.h>//https://github.com/miguelbalboa/rfid
-//we maken gebruik van de specifieke library van de module omdat dit gemakkelijker is om de UID uit te lezen
-//het UID zit namelijk opgeslagen in een speciaal geheugen van de tag
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <Arduino_JSON.h>
 
-/*!
- * @file readACCurrent.
- * @n This example reads Analog AC Current Sensor.
- * @copyright   Copyright (c) 2010 DFRobot Co.Ltd (https://www.dfrobot.com)
- * @licence     The MIT License (MIT)
- * @get from https://www.dfrobot.com
- Created 2016-3-10
- By berinie Chen <bernie.chen@dfrobot.com>
- Revised 2019-8-6
- By Henry Zhao<henry.zhao@dfrobot.com>
-*/
+#include <SPI.h>
+#include <MFRC522.h>
+#define SS_PIN 32
+#define RST_PIN 14
+const char* ssid     = "embedded";
+const char* password = "IoTembedded";
+const char* serverName = "http://embed-dev-1.stuvm.be/post-kaart.php";
+const char* serverName1 = "http://embed-dev-1.stuvm.be/kastjes.php";
+const char* serverName2 = "http://embed-dev-1.stuvm.be/openkastjes.php";
+const char* serverName3 = "http://embed-dev-1.stuvm.be/postopenkastjes.php";
+String apiKeyValue = "tPmAT5Ab3j7F7";
 
+String sensorReadings;
+String sensorReadingsArr[100];
 
 //////////////////////////////////////
 //////////////////////////////////////
@@ -28,6 +27,10 @@
 //////////////////////////////////////
 //////////////////////////////////////
 
+byte nuidPICC[4] = {0, 0, 0, 0};
+MFRC522::MIFARE_Key key;
+MFRC522 rfid = MFRC522(SS_PIN, RST_PIN);
+String HEXA = "";
 
 //hoort bij gsm module
 SoftwareSerial mySerial(16, 17); //SIM800L Tx & Rx is geconnecteerd met esp32 rx 16 en tx 17
@@ -74,8 +77,8 @@ const int relaisBoven = 32;
 const int relaisOnder = 0; // de code om deze relais aan te zetten is writeBlockData(GP0,0); om hem uit te zetten writeBlockData(GP0,1);
 
 //solentoid
-String openKastje = "1";
-
+String openKastje = "0";
+String kastNr = "0";
 String rnummer = "0";
 
 //////////////////////////////////////
@@ -84,6 +87,35 @@ String rnummer = "0";
 //////////////////////////////////////
 //////////////////////////////////////
 
+/////////////////////////////////////
+//get
+////////////////////////////////////
+String httpGETRequest(const char* serverName) {
+  WiFiClient client;
+  HTTPClient http;
+
+  // Your Domain name with URL path or IP address with path
+  http.begin(client, serverName);
+
+  // Send HTTP POST request
+  int httpResponseCode = http.GET();
+
+  String payload = "{}";
+
+  if (httpResponseCode > 0) {
+    Serial.print("HTTP Response code: ");
+    Serial.println(httpResponseCode);
+    payload = http.getString();
+  }
+  else {
+    Serial.print("Error code: ");
+    Serial.println(httpResponseCode);
+  }
+  // Free resources
+  http.end();
+
+  return payload;
+}
 
 ////////////////////////////////////
 //gsmModule
@@ -184,9 +216,121 @@ void ledstrip(String kleurWaar){
   }
 }
 
+////////////////////////////////////
+//get kastjes ledstrip
+////////////////////////////////////
+void getKast(){
+    if (WiFi.status() == WL_CONNECTED) {
+
+      sensorReadings = httpGETRequest(serverName1);
+      Serial.println(sensorReadings);
+      JSONVar myObject = JSON.parse(sensorReadings);
+
+      if (JSON.typeof(myObject) == "undefined") {
+        Serial.println("Parsing input failed!");
+        return;
+      }
+
+      Serial.print("JSON object = ");
+      Serial.println(myObject);
+
+      JSONVar keys = myObject[0].keys();
+
+      for (int i = 0; i < keys.length(); i++) {
+        JSONVar value = myObject[0][keys[i]];
+        String jsonString = JSON.stringify(value);
+        Serial.print(keys[i]);
+        Serial.print(" = ");
+        Serial.println(value);
+        sensorReadingsArr[i] = value;
+      }
+
+      if(sensorReadingsArr[4] == "1"){
+        ledstrip("bovenRood");
+      } else {
+        ledstrip("bovenGroen");
+      }
+
+      JSONVar keys1 = myObject[1].keys();
+
+      for (int i = 0; i < keys1.length(); i++) {
+        JSONVar value = myObject[1][keys[i]];
+        String jsonString = JSON.stringify(value);
+        Serial.print(keys1[i]);
+        Serial.print(" = ");
+        Serial.println(value);
+        sensorReadingsArr[i] = value;
+      }
+      if(sensorReadingsArr[4] == "1"){
+        ledstrip("onderRood");
+      } else {
+        ledstrip("onderGroen");
+      }
+    }
+  }
+
 //////////////////////////////////
 //kaartlezer
 //////////////////////////////////
+void printHex(byte *buffer, byte bufferSize) {
+ for (byte i = 0; i < bufferSize; i++) {
+   HEXA += buffer[i] < 0x10 ? " 0" : " ";
+   HEXA += String(buffer[i], HEX);
+  
+ }
+  Serial.print(HEXA);
+  if (WiFi.status() == WL_CONNECTED) {
+    WiFiClient client;
+    HTTPClient http;
+
+    // Your Domain name with URL path or IP address with path
+    http.begin(client, serverName);
+        http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+        String httpRequestData = "api_key=" + apiKeyValue + "&num='" + HEXA + "'";
+        Serial.print("httpRequestData: ");
+        Serial.println(httpRequestData);
+
+        int httpResponseCode = http.POST(httpRequestData);
+
+        if (httpResponseCode > 0) {
+          Serial.print("HTTP Response code: ");
+          Serial.println(httpResponseCode);
+        }
+        else {
+          Serial.print("Error code: ");
+          Serial.println(httpResponseCode);
+        }
+        // Free resources
+        http.end();
+      
+    HEXA ="";
+  }
+ 
+}
+
+void readRFID() { /* function readRFID */
+ ////Read RFID card
+ for (byte i = 0; i < 6; i++) {
+   key.keyByte[i] = 0xFF;
+ }
+ // Look for new 1 cards
+ if ( ! rfid.PICC_IsNewCardPresent())
+   return;
+ // Verify if the NUID has been readed
+ if (  !rfid.PICC_ReadCardSerial())
+   return;
+ // Store NUID into nuidPICC array
+ for (byte i = 0; i < 4; i++) {
+   nuidPICC[i] = rfid.uid.uidByte[i];
+ }
+ Serial.print(F("RFID In hex: "));
+ printHex(rfid.uid.uidByte, rfid.uid.size);
+ Serial.println();
+ // Halt PICC
+ rfid.PICC_HaltA();
+ // Stop encryption on PCD
+ rfid.PCD_StopCrypto1();
+}
 
 //////////////////////////////////
 //solenoid
@@ -209,7 +353,7 @@ void solenoid(int solenoid, int magneetcontact){
   //schrijf naar openkastje kastNr een 0
 }
 
-void solenoid(){
+void getkastnr() {
   if (WiFi.status() == WL_CONNECTED) {
 
       sensorReadings = httpGETRequest(serverName3);
@@ -241,7 +385,9 @@ void solenoid(){
         openKastje = "1";
       } 
     }
+}
 
+void solenoid(){
   //alle solenoids open
         digitalWrite(slotBoven,HIGH);
         digitalWrite(slotMidden,HIGH);
@@ -260,7 +406,7 @@ void solenoid(){
                 delay(100);
                 Serial.println("wachten op time");
             }
-            Serial.println("terug dicth");
+            Serial.println("terug dicht");
             //kastje is al zeker 5 seconden open dus de solenoids mogen terug dicht.
             digitalWrite(slotBoven,LOW);
             digitalWrite(slotMidden,LOW);
@@ -295,6 +441,7 @@ void postopenkastjes() {
         }
         // Free resources
         http.end();
+}
 }
 
 
@@ -335,6 +482,23 @@ void setup()
   pinMode(slotMidden,OUTPUT);
   pinMode(slotOnder,OUTPUT);
 
+  //kaartlezer
+  SPI.begin();
+  rfid.PCD_Init();
+
+  
+
+  //wifi
+  WiFi.begin(ssid, password);
+  Serial.println("Connecting");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.print("Connected to WiFi network with IP Address: ");
+  Serial.println(WiFi.localIP());
+
 
 }
 
@@ -343,6 +507,11 @@ void setup()
 //////////////////////////////////
 void loop()
 {
+  readRFID();
+  // getKast();
+  getkastnr();
+
+
 
   if(openKastje == "A"){
     Serial.println("solenoid alles");
@@ -360,7 +529,5 @@ void loop()
   if(rnummer == "u0140140"){
     effectQuinten();
   }
-  
-  
  
 }
