@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } 
         $t=time();
         
-        $sql = "UPDATE kastjes SET tijd = '".date("Y-m-d H:i:s",$t)."', kastNr = '".$kastnr."' WHERE id = '1'";
+        $sql = "UPDATE openKastjes SET tijd = '".date("Y-m-d H:i:s",$t)."', kastNr = '".$kastnr."' WHERE id = '1'";
         
         if ($conn->query($sql) === TRUE) {
             echo "New record created successfully";
