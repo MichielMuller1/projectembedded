@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             die("Connection failed: " . $conn->connect_error);
         } 
         $sqlget = "SELECT * FROM kaarten";
-        if ($result = $conn->query($sql)) {
+        if ($result = $conn->query($sqlget)) {
             $arr = [];
             $inc = 0;
             while ($row = $result->fetch_assoc()) {
