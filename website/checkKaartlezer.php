@@ -9,6 +9,10 @@ $stmt->execute();
 $result1 = $stmt->fetchAll();
 echo $result1[0][1];
 
+if (empty($result1)){
+    header("Location: indexFoutmelding.php");
+}
+
 $kaartnummer = $result1[0][1];
 
 $stmt = $conn->prepare("select rnummer,voornaam,achternaam,admin from kaarten where UID = '$kaartnummer'");
