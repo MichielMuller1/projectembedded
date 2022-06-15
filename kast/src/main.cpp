@@ -131,7 +131,7 @@ float readACCurrentValue(int ACPin)
   Ueff = peakVoltage * 0.707;    
 
   /*The circuit is amplified by 2 times, so it is divided by 2.*/
-  Ueff = (Ueff / 1024 * VREF ) / 2;  
+  Ueff = (Ueff / 4095 * VREF ) / 2;  
 
   ACCurrtntValue = Ueff * ACTectionRange;
 
@@ -177,7 +177,6 @@ void ledstrip(String kleurWaar){
   }else{
     writeBlockData(GP1,0);
   }
-  
 }
 
 //////////////////////////////////
@@ -186,7 +185,9 @@ void ledstrip(String kleurWaar){
 
 
 
-
+//////////////////////////////////
+//setup
+//////////////////////////////////
 void setup()
 {
   //Begin serial communicatie met esp serial monitor
@@ -210,8 +211,6 @@ void setup()
   writeBlockData(GP0, B00000001);//de relais
   writeBlockData(GP1, B00000000);//de leds
 
-
-
   //magneetcontacten
   pinMode(magneetBoven,INPUT_PULLUP);
   pinMode(magneetMidden,INPUT_PULLUP);
@@ -225,7 +224,9 @@ void setup()
 
 }
 
-
+//////////////////////////////////
+//hoofdloop
+//////////////////////////////////
 void loop()
 {
  
