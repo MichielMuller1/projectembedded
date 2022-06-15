@@ -26,7 +26,7 @@ $api_key = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $api_key = test_input($_POST["api_key"]);
     if($api_key == $api_key_value) {
-        // $oplaadstatus = test_input($_POST["oplaadStatus"]);
+        $kastnr = test_input($_POST["num"]);
 
 
 
@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } 
         $t=time();
         
-        $sql = "UPDATE kastjes SET tijd = '".date("Y-m-d H:i:s",$t)."' WHERE id = '1'";
+        $sql = "UPDATE kastjes SET tijd = '".date("Y-m-d H:i:s",$t)."', kastNr = '".num."' WHERE id = '1'";
         
         if ($conn->query($sql) === TRUE) {
             echo "New record created successfully";
