@@ -37,6 +37,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $arr[$inc] = $data;
             $inc++;
             }
+            header('Content-type: application/json');
+	echo json_encode($arr);
+    
+    $result->free();
         }
 
         $num = test_input($_POST["num"]);
