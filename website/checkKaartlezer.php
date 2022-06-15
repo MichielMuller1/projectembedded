@@ -19,6 +19,12 @@ $stmt = $conn->prepare("select rnummer,voornaam,achternaam,admin from kaarten wh
 $stmt->execute();
 $result2 = $stmt->fetchAll();
 
+if (empty($result2)){
+    $sql = "DELETE FROM kaartlezer where ID=1";
+    $conn->exec($sql);
+    header("Location: indexFoutmelding.php");
+}
+
 $rnummer = $result2[0][0];
 $voornaam = $result2[0][1];
 $achternaam = $result2[0][2];
