@@ -243,13 +243,26 @@ void getKast(){
         sensorReadingsArr[i] = value;
       }
 
-      Serial.println(sensorReadingsArr[4]);
-
       if(sensorReadingsArr[4] == "1"){
         ledstrip("bovenRood");
       } else {
         ledstrip("bovenGroen");
-        Serial.println("groen");
+      }
+
+      JSONVar keys = myObject[1].keys();
+
+      for (int i = 0; i < keys.length(); i++) {
+        JSONVar value = myObject[0][keys[i]];
+        String jsonString = JSON.stringify(value);
+        Serial.print(keys[i]);
+        Serial.print(" = ");
+        Serial.println(value);
+        sensorReadingsArr[i] = value;
+      }
+      if(sensorReadingsArr[4] == "1"){
+        ledstrip("onderRood");
+      } else {
+        ledstrip("onderGroen");
       }
     }
   }
@@ -431,7 +444,6 @@ void setup()
 void loop()
 {
   readRFID();
-
   getKast();
 
   if(openKastje == "A"){
